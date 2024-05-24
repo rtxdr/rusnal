@@ -1,8 +1,11 @@
 const { invoke } = window.__TAURI__.tauri;
 
 let date = new Date();
+let dater = date.getDate()
 let year = date.getFullYear();
 let month = date.getMonth();
+
+let offsetsel = 0;
 
 const months = [
     "january",
@@ -30,10 +33,27 @@ const weekdays = [
     "sunday"
 ];
 
+function plusoneday() {
+    offsetsel += 1;
+
+    selecteddate()
+}
+
+function minusoneday() {
+    offsetsel -= 1;
+
+    selecteddate()
+}
+
 function selecteddate() {
     let now = new Date();
     let datestring = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`
+    let selecteddate = new Date(year, month, dater + offsetsel);
+    console.log(selecteddate)
+    // let currentdate = `${now.getDate()}`
+    //now is equal to selected date by user, not the current date
     document.getElementById("selecteddate").innerHTML = datestring;
+    document.getElementById("currentdate").innerHTML = `${selecteddate.getDate()} ${months[selecteddate.getMonth()]} ${selecteddate.getFullYear()}`;
 }
 
 const manipulate = () => {
@@ -50,7 +70,7 @@ const manipulate = () => {
     // Get the last date of the previous month
     let monthlastdate = new Date(year, month, 0).getDate();
 
-    console.log("helo !${weekdays[dayone]} ${lastdate} ${weekdays[dayend]} ${monthlastdate}")
+    console.log(`helo !${weekdays[dayone]} ${lastdate} ${weekdays[dayend]} ${monthlastdate}`)
 }
 
-// window.onload = selecteddate;
+window.onload = selecteddate();
