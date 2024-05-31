@@ -2,12 +2,63 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod fileman;
-use crate::fileman::read_journals;
+// use crate::fileman::read_journals;
 use std::io;
+use std::fs;
+use std::fs::read_to_string;
 
 #[tauri::command]
 fn test(){
     println!("hello!");
+}
+
+#[tauri::command]
+fn read_journals(journalpath: &str) -> Vec<String> //reads dir only
+{
+    let mut result: Vec<String> = Vec::new();
+
+    if let Ok(entries) = fs::read_dir(journalpath) { //i have no clue why this works
+        // Iterate over the directory entries
+        for entry in entries {
+            if let Ok(entry) = entry
+            {
+                // Get the file name as a string
+                if let Some(file_name) = entry.file_name().to_str()
+                {
+                    // println!("{}", file_name);
+                    result.push(String::from(file_name));
+                }
+
+                else
+                {
+                    eprintln!("Error converting file name to string");
+                }
+            }
+
+            else
+            {
+                eprintln!("Error reading directory entry");
+            }
+        }
+    }
+
+    else
+    {
+        eprintln!("Error reading directory");
+    }
+    result
+}
+
+
+#[tauri::command]
+fn read_contents(filename: &str) -> Vec<String> {
+    let mut result = Vec::new();
+
+    for line in read_to_string(filename).unwrap().lines() {
+        result.push(line.to_string())
+    }
+
+    result
 }
 
 fn filesel(){
@@ -47,7 +98,9 @@ fn filesel(){
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![test])
-        .run(tauri::generate_context!())
+    .invoke_handler(tauri::generate_handler![test])
+    .invoke_handler(tauri::generate_handler![read_journals])
+    .invoke_handler(tauri::generate_handler![read_contents])
+    .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

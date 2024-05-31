@@ -5,6 +5,8 @@ let dater = date.getDate()
 let year = date.getFullYear();
 let month = date.getMonth();
 
+let selecteddatevar = new Date();
+
 let offsetsel = 0;
 
 const months = [
@@ -48,12 +50,36 @@ function minusoneday() {
 function selecteddate() {
     let now = new Date();
     let datestring = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`
-    let selecteddate = new Date(year, month, dater + offsetsel);
-    console.log(selecteddate)
+    selecteddatevar = new Date(year, month, dater + offsetsel);
+    // console.log(selecteddatevar)
     // let currentdate = `${now.getDate()}`
     //now is equal to selected date by user, not the current date
+    let formatteddatename = `${selecteddatevar.getDate()}_${months[selecteddatevar.getMonth()]}_${selecteddatevar.getFullYear()}`
     document.getElementById("selecteddate").innerHTML = datestring;
-    document.getElementById("currentdate").innerHTML = `${selecteddate.getDate()} ${months[selecteddate.getMonth()]} ${selecteddate.getFullYear()}`;
+    document.getElementById("currentdate").innerHTML = `${selecteddatevar.getDate()} ${months[selecteddatevar.getMonth()]} ${selecteddatevar.getFullYear()}`;
+}
+
+function displaydirs() {
+    let stringtoshow
+    invoke("read_journals", { journalpath: "/home/rtxdr/Documents/school/projet2/rusnal/src-tauri/src/"}).then((message) => {
+        stringtoshow = message; 
+        document.getElementById("textarea").innerHTML = stringtoshow;
+    })
+}
+
+function displayjournal() {
+    let msglist;
+    let stringtoshow = "";
+    invoke("read_contents", { filename: "/home/rtxdr/Documents/school/projet2/rusnal/src-tauri/src/text.txt"}).then((message) => {
+        msglist = message; 
+        console.log(message);
+        // document.getElementById("textarea").innerHTML = stringtoshow;
+        msglist.forEach(element => {
+            stringtoshow = stringtoshow + element + "\n";
+          });
+        document.getElementById("textarea").innerHTML = stringtoshow;
+      
+    })
 }
 
 const manipulate = () => {
